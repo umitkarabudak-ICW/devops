@@ -3,7 +3,7 @@ apiVersion: v1
 metadata:
   name: redis-slave-conf
 data:
-  redis-slave.conf: |
+  redis.conf: |
     slaveof redis-master 6379
     protected-mode no
     requirepass Redis1234
