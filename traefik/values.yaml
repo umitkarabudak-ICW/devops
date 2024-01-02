@@ -602,6 +602,10 @@ ports:
     port: 6379
     protocol: TCP
 
+  redis-cluster:
+    port: 26379
+    protocol: TCP
+
   kafdrop:
     port: 9010
     protocol: TCP
@@ -774,6 +778,11 @@ service:
       port: 443
       protocol: TCP
       targetPort: websecure
+    - name: redis-cluster
+      nodePort: 26379
+      port: 443
+      protocol: TCP
+      targetPort: redis-cluster
   loadBalancerSourceRanges: []
     # - 192.168.0.1/32
     # - 172.16.0.0/16
