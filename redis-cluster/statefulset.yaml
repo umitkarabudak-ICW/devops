@@ -29,6 +29,13 @@ spec:
       containers:
       - name: redis-cluster
         image: redis:6.2.6
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
         ports:
         - containerPort: 6379
           name: client
