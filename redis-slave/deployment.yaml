@@ -18,9 +18,7 @@ spec:
       volumes:
         - name: conf
           configMap: 
-            items:
-            - key: redis-slave.conf
-              path: redis.conf
+            name: redis-slave-conf
       containers:
       - name: redis
         image: redis:6.2.5
