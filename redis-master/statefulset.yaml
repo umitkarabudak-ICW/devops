@@ -6,7 +6,7 @@ metadata:
     app: redis-master
 spec:
   serviceName: redis-master
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: redis-master
