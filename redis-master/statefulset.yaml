@@ -25,10 +25,10 @@ spec:
         image: redis:6.2.5
         resources:
           requests:
-            memory: "256m"
+            memory: "256Mi"
             cpu: "500m"
           limits:
-            memory: "256m"
+            memory: "256Mi"
             cpu: "500m"
         imagePullPolicy: Always
         ports:
@@ -58,6 +58,6 @@ spec:
           - ReadWriteOnce
         resources:
           requests:
-            storage: "512m"
+            storage: "512Mi"
         storageClassName: local-storage
         volumeMode: Filesystem
