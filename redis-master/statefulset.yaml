@@ -25,10 +25,10 @@ spec:
         image: redis:6.2.5
         resources:
           requests:
-            memory: "1Gi"
+            memory: "256m"
             cpu: "500m"
           limits:
-            memory: "1Gi"
+            memory: "256m"
             cpu: "500m"
         imagePullPolicy: Always
         ports:
