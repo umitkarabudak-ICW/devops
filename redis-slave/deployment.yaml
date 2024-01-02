@@ -31,10 +31,10 @@ spec:
               fieldPath: metadata.namespace
         resources:
           requests:
-            memory: "1Gi"
+            memory: "256m"
             cpu: "300m"
           limits:
-            memory: "1Gi"
+            memory: "256m"
             cpu: "300m"
         command:
           - "redis-server"
