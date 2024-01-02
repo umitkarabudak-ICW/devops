@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-slave
+  labels:
+    name: redis-slave
+spec:
+  replicas: 3 
+  selector:
+    matchLabels:
+      name: redis-slave
+  template:
+    metadata:
+      labels:
+        name: redis-slave
+    spec:
+      subdomain: slave
+      volumes:
+        - name: conf
+          configMap: 
+            items:
+            - key: redis-$(namespace).conf
+              path: redis.conf
+      containers:
+      - name: redis
+        image: redis:6.2.5
+        env:
+        - name: namespace
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "300m"
+          limits:
+            memory: "1Gi"
+            cpu: "300m"
+        command:
+          - "redis-server"
+        args:
+          - "/conf/redis.conf"
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - name: conf
+          mountPath: /conf

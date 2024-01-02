@@ -1,0 +1,11 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: redis-master-conf
+data:
+  redis.conf: |
+    protected-mode no
+    requirepass Redis1234
+    masterauth Redis1234
+    port 6379
+    notify-keyspace-events KEA

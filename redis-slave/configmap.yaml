@@ -1,0 +1,19 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: redis-slave-conf
+data:
+  redis-test.conf: |
+    slaveof redis-master.test.svc.cluster.local 6379
+    protected-mode no
+    requirepass Redis1234
+    masterauth Redis1234
+    port 6379
+    notify-keyspace-events KEA
+  redis-release.conf: |
+    slaveof redis-master.release.svc.cluster.local 6379
+    protected-mode no
+    requirepass Redis1234
+    masterauth Redis1234
+    port 6379
+    notify-keyspace-events KEA

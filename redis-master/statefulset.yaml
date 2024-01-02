@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-master
+  labels:
+    app: redis-master
+spec:
+  publishNotReadyAddresses: true
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    name: redis
+    port: 6379
+    targetPort: 6379 
+  selector:
+    app: redis-master
+[root@stock-dev-km1 redis-master]# cat statefulset.yaml 
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis-master
+  labels:
+    app: redis-master
+spec:
+  serviceName: redis-master
+  replicas: 3
+  selector:
+    matchLabels:
+      app: redis-master
+  template:
+    metadata:
+      labels:
+        app: redis-master
+      annotations:
+    spec:
+      volumes:
+        - name: conf
+          configMap: 
+            name: redis-master-conf
+      containers:
+      - name: redis-master
+        image: redis:6.2.5
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 6379
+          name: client
+        command: ["redis-server"]
+        args: 
+          - "/conf/redis.conf"
+        env:
+        - name: REDIS_CLUSTER_ANNOUNCE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+          readOnly: false
+        - name: conf
+          mountPath: /conf
+  volumeClaimTemplates:
+    - kind: PersistentVolumeClaim
+      apiVersion: v1
+      metadata:
+        name: redis-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+        storageClassName: local-storage
+        volumeMode: Filesystem
