@@ -1,4 +1,4 @@
-import redis
+from redis.sentinel import Sentinel
 import threading
 import time
 
@@ -30,14 +30,17 @@ def main():
     redis_host = 'api.rsm-prod-cloud.vodafone.local'
     redis_port = 6379
     redis_auth_pass = 'Redis1234'
-    redis_client = redis.StrictRedis(host=redis_host, port=redis_port, password=redis_auth_pass)
+
+    sentinel = Sentinel([('api.rsm-prod-cloud.vodafone.local', 6379)], socket_timeout=0.1)
+    master = sentinel.master_for('mymaster', socket_timeout=0.1)
+    #redis_client = redis.StrictRedis(host=redis_host, port=redis_port, password=redis_auth_pass)
 
     user_count = 100
     threads = []
 
     # Her bir kullanicı için bir thread oluştur
     for user_id in range(user_count):
-        thread = threading.Thread(target=write_and_verify_data, args=(redis_client, user_id))
+        thread = threading.Thread(target=write_and_verify_data, args=(master, user_id))
         threads.append(thread)
 
     # Thread'leri başlat
