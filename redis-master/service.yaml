@@ -30,8 +30,7 @@ metadata:
     app.kubernetes.io/component: sentinel
     app.kubernetes.io/instance: sentinel
 spec:
-  type: ClusterIP
-  sessionAffinity: None
+  clusterIP: None
   ports:
   - port: 5000
     targetPort: 5000
