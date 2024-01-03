@@ -2,11 +2,9 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: redis-master
-  labels:
-    app: redis-master
 spec:
   serviceName: redis-master
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: redis-master
@@ -14,15 +12,10 @@ spec:
     metadata:
       labels:
         app: redis-master
-      annotations:
     spec:
-      volumes:
-        - name: conf
-          configMap: 
-            name: redis-master-conf
-      containers:
-      - name: redis-master
-        image: redis:6.2.5
+      initContainers:
+      - name: config
+        image: redis:7.0
         resources:
           requests:
             memory: "256Mi"
@@ -30,29 +23,54 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "500m"
-        imagePullPolicy: Always
+        env:
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: redis-secret
+                key: REDIS_PASSWORD
+        command: [ "sh", "-c", "/scripts/redis_init.sh" ]
+        volumeMounts:
+        - name: redis-config
+          mountPath: /etc/redis/
+        - name: config
+          mountPath: /tmp/redis/
+        - name: init-script
+          mountPath: /scripts/
+      containers:
+      - name: redis
+        image: redis:7.0
+        command: ["redis-server"]
+        args: ["/etc/redis/redis.conf"]
         ports:
         - containerPort: 6379
-          name: client
-        command: ["redis-server"]
-        args: 
-          - "/conf/redis.conf"
-        env:
-        - name: REDIS_CLUSTER_ANNOUNCE_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
+          name: redis
         volumeMounts:
-        - name: redis-data
+        - name: redis-master-data
           mountPath: /data
-          readOnly: false
-        - name: conf
-          mountPath: /conf
+        - name: redis-config
+          mountPath: /etc/redis/
+      volumes:
+      - name: redis-config
+        emptyDir: {}
+      - name: init-script
+        configMap:
+          name: redis-scripts-config-map
+          defaultMode: 0777
+          items:
+          - key: redis_init.sh
+            path: redis_init.sh
+      - name: config
+        configMap:
+          name: redis-config-map
+          items:
+          - key: redis.conf
+            path: redis.conf
   volumeClaimTemplates:
     - kind: PersistentVolumeClaim
       apiVersion: v1
       metadata:
-        name: redis-data
+        name: redis-master-data
       spec:
         accessModes:
           - ReadWriteOnce

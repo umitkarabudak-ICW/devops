@@ -5,8 +5,7 @@ metadata:
   labels:
     app: redis-master
 spec:
-  publishNotReadyAddresses: true
-  type: ClusterIP
+  clusterIP: None
   ports:
   - protocol: TCP
     name: redis
@@ -14,3 +13,24 @@ spec:
     targetPort: 6379 
   selector:
     app: redis-master
+---
+
+# Sentinel service used for project pod connection
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sentinel
+  labels:
+    app: sentinel
+    app.kubernetes.io/component: sentinel
+    app.kubernetes.io/instance: sentinel
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+  - port: 5000
+    targetPort: 5000
+    name: sentinel
+  selector:
+    app: sentinel

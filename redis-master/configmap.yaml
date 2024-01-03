@@ -1,11 +1,37 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: redis-master-conf
+  name: redis-config-map
 data:
+  # Variable needed for sentinel init container
+  REDIS_NODES: "redis-master-0,redis-master-1,redis-master-2"
+
+  # Config used in all redises
   redis.conf: |
+    bind 0.0.0.0
     protected-mode no
-    requirepass Redis1234
-    masterauth Redis1234
     port 6379
-    notify-keyspace-events KEA
+    tcp-backlog 511
+    timeout 10
+    tcp-keepalive 30
+    daemonize no
+    supervised no
+    pidfile "/var/run/redis_6379.pid"
+    loglevel notice
+    logfile ""
+    databases 16
+    always-show-logo yes
+    save ""
+    rdbcompression yes
+    rdbchecksum yes
+    rdb-del-sync-files no
+    dir "/data"
+    replica-serve-stale-data yes
+    replica-read-only yes
+    repl-diskless-sync no
+    repl-diskless-sync-delay 5
+    repl-diskless-load disabled
+    appendonly no
+    repl-disable-tcp-nodelay no
+    replica-priority 100
+    acllog-max-len 128
