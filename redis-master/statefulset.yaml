@@ -1,28 +1,21 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: redis-master
+  name: redis
 spec:
-  serviceName: redis-master
+  serviceName: redis
   replicas: 3
   selector:
     matchLabels:
-      app: redis-master
+      app: redis
   template:
     metadata:
       labels:
-        app: redis-master
+        app: redis
     spec:
       initContainers:
       - name: config
         image: redis:7.0
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "500m"
-          limits:
-            memory: "256Mi"
-            cpu: "500m"
         env:
           - name: REDIS_PASSWORD
             valueFrom:
@@ -46,11 +39,13 @@ spec:
         - containerPort: 6379
           name: redis
         volumeMounts:
-        - name: redis-master-data
+        - name: data
           mountPath: /data
         - name: redis-config
           mountPath: /etc/redis/
       volumes:
+      - name: data
+        emptyDir: {}
       - name: redis-config
         emptyDir: {}
       - name: init-script
@@ -66,16 +61,3 @@ spec:
           items:
           - key: redis.conf
             path: redis.conf
-  volumeClaimTemplates:
-    - kind: PersistentVolumeClaim
-      apiVersion: v1
-      metadata:
-        name: redis-master-data
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: "512Mi"
-        storageClassName: local-storage
-        volumeMode: Filesystem
