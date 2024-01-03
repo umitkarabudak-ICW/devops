@@ -10,5 +10,5 @@ spec:
   routes:
     - match: HostSNI(`*`)
       services:
-        - name: sentinel
-          port: 5000
+        - name: sentinel-proxy
+          port: 6379
