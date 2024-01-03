@@ -10,5 +10,5 @@ spec:
   routes:
     - match: HostSNI(`*`)
       services:
-        - name: redis-master
-          port: 6379
+        - name: sentinel
+          port: 5000
