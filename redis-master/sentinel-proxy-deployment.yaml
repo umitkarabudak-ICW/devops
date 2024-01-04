@@ -10,7 +10,7 @@ spec:
     matchLabels:
       app: sentinel-proxy
   strategy:
-    type: Recreate
+    type: RollingUpdate
     rollingUpdate:
       maxUnavailable: 1
   template:

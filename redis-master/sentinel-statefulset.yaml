@@ -13,7 +13,7 @@ spec:
       labels:
         app: sentinel
   strategy:
-    type: Recreate
+    type: RollingUpdate
     rollingUpdate:
       maxUnavailable: 1
     spec:
