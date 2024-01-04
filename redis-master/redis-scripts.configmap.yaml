@@ -30,9 +30,7 @@ data:
     sentinel down-after-milliseconds mymaster 1000
     sentinel failover-timeout mymaster 10000
     sentinel parallel-syncs mymaster 1
-    sentinel sentinel-pass ${REDIS_PASSWORD}
     sentinel auth-pass mymaster ${REDIS_PASSWORD}
-    requirepass ${REDIS_PASSWORD}
     sentinel announce-ip ${HOSTNAME}.sentinel
     sentinel announce-port 5000
 
