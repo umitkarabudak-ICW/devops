@@ -13,6 +13,8 @@ spec:
       labels:
         app: sentinel
     spec:
+      strategy:
+        type: Recreate
       initContainers:
       - name: config
         image: redis:7.0
