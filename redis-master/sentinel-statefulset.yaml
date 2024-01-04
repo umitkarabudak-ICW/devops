@@ -12,9 +12,11 @@ spec:
     metadata:
       labels:
         app: sentinel
+  strategy:
+    type: Recreate
+    rollingUpdate:
+      maxUnavailable: 1
     spec:
-      strategy:
-        type: Recreate
       initContainers:
       - name: config
         image: redis:7.0

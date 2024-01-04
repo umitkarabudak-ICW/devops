@@ -9,6 +9,10 @@ spec:
   selector:
     matchLabels:
       app: sentinel-proxy
+  strategy:
+    type: Recreate
+    rollingUpdate:
+      maxUnavailable: 1
   template:
     metadata:
       labels:
