@@ -42,4 +42,4 @@ spec:
     targetPort: 6379
   selector:
     app: sentinel-proxy
-  type: ClusterIP
+  type: LoadBalancer
