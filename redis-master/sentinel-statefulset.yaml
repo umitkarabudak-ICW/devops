@@ -12,10 +12,6 @@ spec:
     metadata:
       labels:
         app: sentinel
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1
     spec:
       initContainers:
       - name: config
