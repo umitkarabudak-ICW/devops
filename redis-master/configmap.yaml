@@ -4,7 +4,7 @@ metadata:
   name: redis-config-map
 data:
   # Variable needed for sentinel init container
-  REDIS_NODES: "redis-0.redis,redis-1.redis,redis-2.redis"
+  REDIS_NODES: "redis-0.redis,redis-1.redis,redis-2.redis,redis-3.redis,redis-4.redis,redis-5.redis"
 
   # Config used in all redises
   redis.conf: |
