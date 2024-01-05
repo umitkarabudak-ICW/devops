@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: kafka-tls
+spec:
+  secretName: api-rsm-prod-ca-secret
+  issuerRef:
+    name: api-rsm-prod-clusterissuer
+    kind: ClusterIssuer
+  commonName: kafka-test-bootstrap.rsm-prod-cloud.vodafone.local
+  dnsNames:
+    - kafka-test-bootstrap.rsm-prod-cloud.vodafone.local
+    - kafka-test-broker1.rsm-prod-cloud.vodafone.local
+    - kafka-test-broker1.rsm-prod-cloud.vodafone.local
+    - kafka-test-broker1.rsm-prod-cloud.vodafone.local

@@ -1,0 +1,78 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: rsm
+spec:
+  kafka:
+    version: 3.6.0
+    replicas: 3
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: "300m"
+      limits:
+        memory: 368Mi
+        cpu: "300m"
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+      - name: external
+        port: 9094
+        type: nodeport
+        tls: true
+        configuration:
+          bootstrap:
+            annotations:
+              advertisedHost: kafka-test-bootstrap.rsm-prod-cloud.vodafone.local
+              advertisedPort: 443
+           #nodePort: 32200
+          brokers:
+          - broker: 0
+            advertisedHost: kafka-test-broker0.rsm-prod-cloud.vodafone.local
+            advertisedPort: 443
+            #nodePort: 32003
+          - broker: 1
+            advertisedHost: kafka-test-broker1.rsm-prod-cloud.vodafone.local
+            advertisedPort: 443
+            #nodePort: 32004
+          - broker: 2
+            advertisedHost: kafka-test-broker2.rsm-prod-cloud.vodafone.local
+            advertisedPort: 443
+            #nodePort: 32005
+          brokerCertChainAndKey:
+            secretName: api-rsm-prod-ca-secret
+            certificate: tls.crt
+            key: tls.key
+    config:
+      offsets.topic.replication.factor: 3
+      transaction.state.log.replication.factor: 3
+      transaction.state.log.min.isr: 2
+      default.replication.factor: 3
+      min.insync.replicas: 2
+      inter.broker.protocol.version: "3.6"
+      ssl.cipher.suites: TLS_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 # (1)
+      ssl.enabled.protocols: TLSv1.3, TLSv1.2 # (2)
+      ssl.protocol: TLSv1.3 # (3)
+      ssl.endpoint.identification.algorithm: HTTPS
+    storage:
+      type: ephemeral
+  zookeeper:
+    replicas: 3
+    storage:
+      type: ephemeral
+  entityOperator:
+    topicOperator:
+      resources:
+        requests:
+          memory: 256Mi
+          cpu: "300m"
+        limits:
+          memory: 368Mi
+          cpu: "300m"
+    userOperator: {}

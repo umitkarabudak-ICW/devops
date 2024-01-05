@@ -1,0 +1,29 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: kafka-ingress
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: HostSNI(`kafka-test-bootstrap.rsm-prod-cloud.vodafone.local`)
+      services:
+        - name: rsm-kafka-external-bootstrap
+          port: 9094  
+    - match: HostSNI(`kafka-test-broker0.rsm-prod-cloud.vodafone.local`)
+      services:
+        - name: rsm-kafka-0
+          port: 9094
+    - match: HostSNI(`kafka-test-broker1.rsm-prod-cloud.vodafone.local`)
+      services:
+        - name: rsm-kafka-1
+          port: 9094
+    - match: HostSNI(`kafka-test-broker2.rsm-prod-cloud.vodafone.local`)
+      services:
+        - name: rsm-kafka-2
+          port: 9094
+  tls:
+    secretName: api-rsm-prod-ca-secret
+    passthrough: true
