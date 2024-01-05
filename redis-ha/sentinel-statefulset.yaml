@@ -4,7 +4,7 @@ metadata:
   name: sentinel
 spec:
   serviceName: sentinel
-  replicas: 0 #ilk olarak redis podlari up olmali. Sonrasinda app run edilmeli.
+  replicas: 6 #ilk olarak redis podlari up olmali. Sonrasinda app run edilmeli.
   selector:
     matchLabels:
       app: sentinel
