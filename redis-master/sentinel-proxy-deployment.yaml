@@ -5,7 +5,7 @@ metadata:
     app: sentinel-proxy
   name: sentinel-proxy
 spec:
-  replicas: 6
+  replicas: 0 #ilk olarak redis ve sentinel podlari up olmali. Sonrasinda app run edilmeli.
   selector:
     matchLabels:
       app: sentinel-proxy
