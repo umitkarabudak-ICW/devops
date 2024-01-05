@@ -1,0 +1,16 @@
+#Kafdrop Service
+kind: Service
+apiVersion: v1
+metadata:
+  name: kafdrop
+spec:
+  ipFamilies:
+    - IPv4
+  ports:
+    - name: tcp
+      protocol: TCP
+      port: 9010
+      targetPort: 9000
+  type: ClusterIP
+  selector:
+    app: kafdrop
