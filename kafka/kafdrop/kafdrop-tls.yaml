@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: kafdrop-tls
+spec:
+  secretName: api-rsm-prod-ca-secret
+  issuerRef:
+    name: api-rsm-prod-clusterissuer
+    kind: ClusterIssuer
+  commonName: kafdrop.rsm-prod-cloud.vodafone.local
+  dnsNames:
+    - kafdrop.rsm-prod-cloud.vodafone.local
