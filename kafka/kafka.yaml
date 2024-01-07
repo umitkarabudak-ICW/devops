@@ -70,9 +70,7 @@ spec:
       ssl.protocol: TLSv1.3 # (3)
       ssl.endpoint.identification.algorithm: HTTPS
     storage:
-      type: persistent-claim
-      size: 1Gi
-      deleteClaim: false
+      type: ephemeral
     readinessProbe:
       initialDelaySeconds: 15
       timeoutSeconds: 5
@@ -92,8 +90,4 @@ spec:
         limits:
           memory: 368Mi
           cpu: "300m"
-    storage:
-      type: persistent-claim
-      size: 1Gi
-      deleteClaim: false
     userOperator: {}
