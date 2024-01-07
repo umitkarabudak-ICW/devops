@@ -5,7 +5,7 @@ metadata:
 spec:
   kafka:
     version: 3.6.0
-    replicas: 3
+    replicas: 6
     resources:
       requests:
         memory: 256Mi
@@ -29,20 +29,20 @@ spec:
         configuration:
           bootstrap:
             annotations:
-              advertisedHost: kafka-test-bootstrap.rsm-prod-cloud.vodafone.local
+              advertisedHost: kafka-bootstrap.rsm-prod-cloud.vodafone.local
               advertisedPort: 443
            #nodePort: 32200
           brokers:
           - broker: 0
-            advertisedHost: kafka-test-broker0.rsm-prod-cloud.vodafone.local
+            advertisedHost: kafka-broker0.rsm-prod-cloud.vodafone.local
             advertisedPort: 443
             #nodePort: 32003
           - broker: 1
-            advertisedHost: kafka-test-broker1.rsm-prod-cloud.vodafone.local
+            advertisedHost: kafka-broker1.rsm-prod-cloud.vodafone.local
             advertisedPort: 443
             #nodePort: 32004
           - broker: 2
-            advertisedHost: kafka-test-broker2.rsm-prod-cloud.vodafone.local
+            advertisedHost: kafka-broker2.rsm-prod-cloud.vodafone.local
             advertisedPort: 443
             #nodePort: 32005
           brokerCertChainAndKey:
