@@ -96,16 +96,6 @@ spec:
         limits:
           memory: 368Mi
           cpu: "300m"
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-              - key: rack
-                operator: In
-                values:
-                  - rack1
-                  - rack2
     storage:
       type: persistent-claim
       size: 1Gi
