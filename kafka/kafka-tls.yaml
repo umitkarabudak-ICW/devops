@@ -13,3 +13,4 @@ spec:
     - kafka-broker1.rsm-prod-cloud.vodafone.local
     - kafka-broker1.rsm-prod-cloud.vodafone.local
     - kafka-broker1.rsm-prod-cloud.vodafone.local
+    - kafdrop.rsm-prod-cloud.vodafone.local
