@@ -21,17 +21,17 @@ spec:
           image: obsidiandynamics/kafdrop
           resources:
             requests:
-              memory: 256Mi
+              memory: 512Mi
               cpu: "300m"
             limits:
-              memory: 368Mi
+              memory: 768Mi
               cpu: "300m"
           ports:
             - containerPort: 9000
               protocol: TCP
           env:
             - name: KAFKA_HEAP_OPTS
-              value: "-Xms256m -Xmx328m"
+              value: "-Xms512m -Xmx720m"
             - name: KAFKA_BROKERCONNECT
               value: >-
                 rsm-kafka-brokers:9091,
