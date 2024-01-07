@@ -8,10 +8,11 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`kafdrop-test.rsm-prod-cloud.vodafone.local`)
+    - match: Host(`kafdrop.rsm-prod-cloud.vodafone.local`)
       kind: Rule
       services:
         - name: kafdrop
           port: 9010
   tls:
     secretName: api-rsm-prod-ca-secret
+    passthrough: true

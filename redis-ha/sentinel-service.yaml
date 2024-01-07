@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/component: sentinel
     app.kubernetes.io/instance: sentinel
 spec:
-  type: NodePort
+  type: LoadBalancer
   sessionAffinity: None
   ports:
   - port: 5000
