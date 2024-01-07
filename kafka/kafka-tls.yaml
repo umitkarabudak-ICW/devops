@@ -10,7 +10,10 @@ spec:
   commonName: kafka-bootstrap.rsm-prod-cloud.vodafone.local
   dnsNames:
     - kafka-bootstrap.rsm-prod-cloud.vodafone.local
+    - kafka-broker0.rsm-prod-cloud.vodafone.local
     - kafka-broker1.rsm-prod-cloud.vodafone.local
-    - kafka-broker1.rsm-prod-cloud.vodafone.local
-    - kafka-broker1.rsm-prod-cloud.vodafone.local
+    - kafka-broker2.rsm-prod-cloud.vodafone.local
+    - kafka-broker3.rsm-prod-cloud.vodafone.local
+    - kafka-broker4.rsm-prod-cloud.vodafone.local
+    - kafka-broker5.rsm-prod-cloud.vodafone.local
     - kafdrop.rsm-prod-cloud.vodafone.local

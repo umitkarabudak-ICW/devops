@@ -44,6 +44,15 @@ spec:
           - broker: 2
             advertisedHost: kafka-broker2.rsm-prod-cloud.vodafone.local
             advertisedPort: 443
+          - broker: 3
+            advertisedHost: kafka-broker3.rsm-prod-cloud.vodafone.local
+            advertisedPort: 443
+          - broker: 4
+            advertisedHost: kafka-broker4.rsm-prod-cloud.vodafone.local
+            advertisedPort: 443
+          - broker: 5
+            advertisedHost: kafka-broker5.rsm-prod-cloud.vodafone.local
+            advertisedPort: 443
             #nodePort: 32005
           brokerCertChainAndKey:
             secretName: api-rsm-prod-ca-secret
