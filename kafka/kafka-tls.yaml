@@ -7,9 +7,9 @@ spec:
   issuerRef:
     name: api-rsm-prod-clusterissuer
     kind: ClusterIssuer
-  commonName: kafka-test-bootstrap.rsm-prod-cloud.vodafone.local
+  commonName: kafka-bootstrap.rsm-prod-cloud.vodafone.local
   dnsNames:
-    - kafka-test-bootstrap.rsm-prod-cloud.vodafone.local
-    - kafka-test-broker1.rsm-prod-cloud.vodafone.local
-    - kafka-test-broker1.rsm-prod-cloud.vodafone.local
-    - kafka-test-broker1.rsm-prod-cloud.vodafone.local
+    - kafka-bootstrap.rsm-prod-cloud.vodafone.local
+    - kafka-broker1.rsm-prod-cloud.vodafone.local
+    - kafka-broker1.rsm-prod-cloud.vodafone.local
+    - kafka-broker1.rsm-prod-cloud.vodafone.local
