@@ -69,10 +69,6 @@ spec:
       ssl.enabled.protocols: TLSv1.3, TLSv1.2 # (2)
       ssl.protocol: TLSv1.3 # (3)
       ssl.endpoint.identification.algorithm: HTTPS
-    producer.config:
-      max.block.ms: 60000
-    consumer.config:
-      max.poll.interval.ms: 300000
     storage:
       type: persistent-claim
       size: 1Gi
