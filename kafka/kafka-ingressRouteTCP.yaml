@@ -24,6 +24,18 @@ spec:
       services:
         - name: rsm-kafka-2
           port: 9094
+    - match: HostSNI(`kafka-broker3.rsm-prod-cloud.vodafone.local`)
+      services:
+        - name: rsm-kafka-3
+          port: 9094
+    - match: HostSNI(`kafka-broker4.rsm-prod-cloud.vodafone.local`)
+      services:
+        - name: rsm-kafka-4
+          port: 9094
+    - match: HostSNI(`kafka-broker5.rsm-prod-cloud.vodafone.local`)
+      services:
+        - name: rsm-kafka-5
+          port: 9094
   tls:
     secretName: api-rsm-prod-ca-secret
     passthrough: true
