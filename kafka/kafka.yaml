@@ -59,11 +59,11 @@ spec:
             certificate: tls.crt
             key: tls.key
     config:
-      offsets.topic.replication.factor: 3
-      transaction.state.log.replication.factor: 3
-      transaction.state.log.min.isr: 2
-      default.replication.factor: 3
-      min.insync.replicas: 2
+      offsets.topic.replication.factor: 6
+      transaction.state.log.replication.factor: 6
+      transaction.state.log.min.isr: 4
+      default.replication.factor: 6
+      min.insync.replicas: 4
       inter.broker.protocol.version: "3.6"
       ssl.cipher.suites: TLS_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 # (1)
       ssl.enabled.protocols: TLSv1.3, TLSv1.2 # (2)
