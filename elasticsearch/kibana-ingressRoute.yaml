@@ -1,0 +1,17 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: kafka-ingress
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: HostSNI(`kibana.rsm-prod-cloud.vodafone.local`)
+      services:
+        - name: kibana
+          port: 8084  
+  tls:
+    secretName: api-rsm-prod-ca-secret
+    passthrough: true
