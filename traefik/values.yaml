@@ -585,38 +585,10 @@ ports:
     # -- The port protocol (TCP/UDP)
     protocol: TCP
 
-  kafka:
-    port: 9094
-    protocol: TCP
-  kafka-b0:
-    port: 9095
-    protocol: TCP
-  kafka-b1:
-    port: 9096
-    protocol: TCP
-  kafka-b2:
-    port: 9097
-    protocol: TCP
-    
   redis:
     port: 6379
     protocol: TCP
 
-  redis-cluster:
-    port: 26379
-    protocol: TCP
-
-  kafdrop:
-    port: 9010
-    protocol: TCP
-  
-  kibana:
-    port: 8084
-    protocol: TCP
-
-  elasticsearch:
-    port: 9200
-    protocol: TCP
  
   web:
     ## -- Enable this entrypoint as a default entrypoint. When a service doesn't explicitly set an entrypoint it will only use this entrypoint.
@@ -778,11 +750,6 @@ service:
       port: 443
       protocol: TCP
       targetPort: websecure
-    - name: redis-cluster
-      nodePort: 26379
-      port: 443
-      protocol: TCP
-      targetPort: redis-cluster
   loadBalancerSourceRanges: []
     # - 192.168.0.1/32
     # - 172.16.0.0/16
