@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus
+  namespace: argocd
+spec:
+  destination:
+    namespace: monitoring
+    name: kind
+  project: kube-apps
+  sources:
+    # Chart from Chart Repo
+    - chart: traefik
+      repoURL: https://traefik.github.io/charts
+      targetRevision: 26.0.0
+      helm:
+        valueFiles:
+        - $values/traefik/values.yaml
+    # Values from Git
+    - repoURL: 'https://github.com/umitkarabudak-ICW/devops'
+      targetRevision: HEAD
+      ref: values
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
