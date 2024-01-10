@@ -5,17 +5,17 @@ metadata:
   namespace: argocd
 spec:
   destination:
+    server: https://kubernetes.default.svc
     namespace: monitoring
-    name: kind
   project: kube-apps
   sources:
     # Chart from Chart Repo
-    - chart: traefik
-      repoURL: https://traefik.github.io/charts
-      targetRevision: 26.0.0
+    - chart: kube-prometheus-stack
+      repoURL: https://prometheus-community.github.io/helm-charts
+      targetRevision: 55.7.0
       helm:
         valueFiles:
-        - $values/traefik/values.yaml
+        - $values/kubernetes-apps/prometheus/values.yaml
     # Values from Git
     - repoURL: 'https://github.com/umitkarabudak-ICW/devops'
       targetRevision: HEAD
