@@ -100,7 +100,7 @@ spec:
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: redis-master-secret
+                  name: redis-master
                   key: REDIS_PASSWORD
             - name: JAVA_TOOL_OPTIONS
           ports:
