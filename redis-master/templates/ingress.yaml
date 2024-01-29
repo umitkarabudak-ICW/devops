@@ -4,7 +4,6 @@ metadata:
   labels:
     app.kubernetes.io/instance: redis-master
   name: redis-master
-  namespace: test
 spec:
   entryPoints:
     - redis-master
