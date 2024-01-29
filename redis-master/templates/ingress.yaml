@@ -3,6 +3,8 @@ kind: IngressRouteTCP
 metadata:
   labels:
     app.kubernetes.io/instance: redis-master
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
   name: redis-master
 spec:
   entryPoints:
