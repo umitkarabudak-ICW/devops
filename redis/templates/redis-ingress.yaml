@@ -6,7 +6,7 @@ metadata:
     kubernetes.io/ingress.class: traefik-external
 spec:
   entryPoints:
-    - redis-{{ .Values.namespace }}
+    - redis
   routes:
     {{- toYaml .Values.traefik.redis.ingress.routes | nindent 10 }}
 #  tls:

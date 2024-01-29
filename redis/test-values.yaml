@@ -142,7 +142,7 @@ traefik:
     ingress:
       routes:
         - kind: Rule
-          match: Host(`redis-haproxy-test.rsm-dev-cloud.vodafone.local`)
+          match: Host(`redis-haproxy-test.rsm-prod-cloud.vodafone.local`)
           services:
             - name: redis-haproxy
               port: 8080
