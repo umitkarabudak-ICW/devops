@@ -39,7 +39,7 @@ securityContext: {}
 service:
   type: LoadBalancer
   ports:
-    - name: redis
+    - name: redis-master
       port: 6379
       targetPort: 6379
       protocol: TCP
