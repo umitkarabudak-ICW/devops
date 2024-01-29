@@ -14,7 +14,33 @@ data:
 
     bind 0.0.0.0
     protected-mode no
+    port 6379
+    tcp-backlog 511
+    timeout 60
+    tcp-keepalive 300
+    daemonize no
+    supervised no
+    pidfile "/var/run/redis_6379.pid"
+    loglevel notice
+    logfile ""
+    databases 16
+    always-show-logo yes
+    save ""
+    rdbcompression yes
+    rdbchecksum yes
+    rdb-del-sync-files no
     dir "/data"
+    replica-serve-stale-data yes
+    replica-read-only yes
+    repl-diskless-sync no
+    repl-diskless-sync-delay 4
+    repl-diskless-load disabled
+    dbfilename dump.rdb
+    appendonly yes
+    appendfilename "appendonly.aof"
+    repl-disable-tcp-nodelay no
+    replica-priority 100
+    acllog-max-len 128
     notify-keyspace-events KEA
     requirepass {{ .Values.password}}
     masterauth {{ .Values.password}}
