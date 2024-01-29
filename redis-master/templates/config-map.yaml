@@ -8,13 +8,13 @@ data:
   redis-slave.conf: |
     slaveof redis.stock.svc.cluster.local 6379
     protected-mode no
-    requirepass 1vCOK4XdD9
-    masterauth 1vCOK4XdD9
+    requirepass {{ .Values.password }}
+    masterauth {{ .Values.password }}
     port 6379
     notify-keyspace-events KEA
   redis.conf: |
     protected-mode no
-    requirepass 1vCOK4XdD9
-    masterauth 1vCOK4XdD9
+    requirepass {{ .Values.password }}
+    masterauth {{ .Values.password }}
     port 6379
     notify-keyspace-events KEA
