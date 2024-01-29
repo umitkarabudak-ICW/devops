@@ -90,7 +90,7 @@ spec:
           mounthPath: /data
         - name: conf
           configMap:
-            name: redis
+            name: redis-master
             defaultMode: 495
       containers:
           command:
@@ -99,7 +99,7 @@ spec:
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: redis
+                  name: redis-master
                   key: database-password
             - name: JAVA_TOOL_OPTIONS
           ports:
