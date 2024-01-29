@@ -1,0 +1,15 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  labels:
+    app.kubernetes.io/instance: redis-master
+  name: redis-master
+  namespace: test
+spec:
+  entryPoints:
+    - redis-master
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: redis-master
+          port: 6379
