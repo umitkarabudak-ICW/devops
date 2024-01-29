@@ -1,0 +1,70 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ .Values.appName }}-configmap
+data:
+  # Variable needed for sentinel init container
+  REDIS_NODES: "{{- range $index, $element := until (int $.Values.replicaCount) -}}
+    redis-{{ $index }}.redis{{ if ne (add $index 1) (int $.Values.replicaCount) }},{{ end }}
+  {{- end }}"
+  # Config used in all redises
+  redis.conf: |-
+    # Redis High availability with Sentinel on Kubernetes(K8s) configurations
+    # -----------------------------------------------------------------------
+
+    bind 0.0.0.0
+    protected-mode no
+    port 6379
+    tcp-backlog 511
+    timeout 60
+    tcp-keepalive 30
+    daemonize no
+    supervised no
+    pidfile "/var/run/redis_6379.pid"
+    loglevel notice
+    logfile ""
+    databases 16
+    always-show-logo yes
+    save ""
+    rdbcompression yes
+    rdbchecksum yes
+    rdb-del-sync-files no
+    dir "/data"
+    replica-serve-stale-data yes
+    replica-read-only yes
+    repl-diskless-sync no
+    repl-diskless-sync-delay 4
+    repl-diskless-load disabled
+    dbfilename dump.rdb
+    appendonly yes
+    appendfilename "appendonly.aof"
+    repl-disable-tcp-nodelay no
+    replica-priority 100
+    acllog-max-len 128
+    notify-keyspace-events KEA
+    requirepass {{ .Values.password}}
+    masterauth {{ .Values.password}}
+     
+     
+  
+  redis-init.sh: |-
+    #!/bin/bash
+    echo "Copying configuration file"
+    cp /tmp/redis/redis.conf /etc/redis/redis.conf
+    echo "requirepass ${REDIS_PASSWORD}" >> /etc/redis/redis.conf
+    echo "masterauth ${REDIS_PASSWORD}" >> /etc/redis/redis.conf            
+    if [ "$(redis-cli -h sentinel -p 5000 ping)" != "PONG" ]; then
+      echo "Sentinel not found to get the master info, defaulting to redis-0"
+      if [ "$(hostname)" == "redis-0" ]; then
+        echo "This is redis-0, No need to update config."
+      else
+          echo "This is not redis-0, Updating redis.conf. finding master FQDN"
+          MASTER_FDQN=`hostname  -f | sed -e 's/redis-[0-9]\./redis-0./'`
+          echo "REPLICAOF $MASTER_FDQN 6379" >> /etc/redis/redis.conf
+      fi
+    else
+      echo "Sentinel found, finding master"
+      MASTER="$(redis-cli -h sentinel -p 5000 sentinel get-master-addr-by-name mymaster | grep -E '(^redis-\d{1,})|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})')"
+      echo "Master got: $MASTER, updating this in redis.conf"
+      echo "REPLICAOF $MASTER 6379" >> /etc/redis/redis.conf
+    fi

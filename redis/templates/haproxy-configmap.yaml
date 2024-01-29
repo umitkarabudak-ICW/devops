@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: haproxy-config
+data:
+  haproxy.cfg: |
+    global
+      daemon
+      maxconn 500
+
+    defaults
+      mode tcp
+      log global
+      option  log-health-checks
+      timeout connect 60s
+      timeout client 50s
+      timeout server 50s
+
+    frontend http
+      bind :8080
+      default_backend stats
+
+    backend stats
+      mode http
+      stats enable
+      stats uri /
+      stats refresh 1s
+      stats show-legends
+      stats admin if TRUE
+
+    resolvers kubedns
+      nameserver namesrv1 kube-dns.kube-system.svc.cluster.local:53
+      resolve_retries  3
+      timeout retry 3s
+      hold other 3s
+      hold refused 3s
+      hold nx 3s
+      hold timeout 3s
+      hold valid 3s
+
+    frontend redis-read
+      bind *:6380
+      default_backend redis-online
+
+    frontend redis-write
+      bind *:6379
+      default_backend redis-primary
+
+    backend redis-primary
+      mode tcp
+      balance first
+      option tcp-check
+      tcp-check send AUTH\ {{ .Values.password }}\r\n
+      tcp-check expect string +OK
+      tcp-check send PING\r\n
+      tcp-check expect string +PONG
+      tcp-check send info\ replication\r\n
+      tcp-check expect string role:master
+      tcp-check send QUIT\r\n
+      tcp-check expect string +OK
+      default-server  check resolvers kubedns inter 1s downinter 1s fastinter 1s fall 1 rise 3 maxconn 330 no-agent-check on-error mark-down
+      server redis-0 redis-0.redis.test.svc.cluster.local:6379
+      server redis-1 redis-1.redis.test.svc.cluster.local:6379
+      server redis-2 redis-2.redis.test.svc.cluster.local:6379
+      
+
+    backend redis-online
+      mode tcp
+      balance roundrobin
+      option tcp-check
+      tcp-check send AUTH\ {{ .Values.password }}\r\n
+      tcp-check expect string +OK
+      tcp-check send PING\r\n
+      tcp-check expect string +PONG
+      tcp-check send QUIT\r\n
+      tcp-check expect string +OK
+      default-server  check resolvers kubedns inter 1s downinter 1s fastinter 1s fall 1 rise 3 maxconn 330 no-agent-check on-error mark-down
+      server redis-0 redis-0.redis.test.svc.cluster.local:6379
+      server redis-1 redis-1.redis.test.svc.cluster.local:6379
+      server redis-2 redis-2.redis.test.svc.cluster.local:6379
+      
+      
+

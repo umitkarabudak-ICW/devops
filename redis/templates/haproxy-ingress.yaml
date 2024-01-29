@@ -1,0 +1,12 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Values.appName}}-{{ .Values.haproxy.appName}}-dashboard
+  annotations: 
+    kubernetes.io/ingress.class: traefik-external 
+spec:
+  entryPoints:
+    - websecure
+  routes:  
+    {{- toYaml .Values.traefik.haproxy.ingress.routes | nindent 10 }}
+  tls: {}

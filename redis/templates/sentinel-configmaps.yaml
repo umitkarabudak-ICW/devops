@@ -1,0 +1,31 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: sentinel-configmap
+data:
+  sentinel-init.sh: |-
+    #!/bin/bash
+
+    echo "Looping thorugh the redis list to see if Redis Master node is available now"
+    for i in ${REDIS_NODES//,/ }
+      do
+        MASTER=$(redis-cli --no-auth-warning --raw -h $i -a $REDIS_PASSWORD info replication | awk '{print $1}' | grep master_host: | cut -d ":" -f2)
+        if [ "$MASTER" == "" ]; then
+          echo "no master info found in $i"
+           MASTER=
+        else
+          echo "found $MASTER. setting the configurations"
+          break
+        fi
+      done
+    echo "Creating Sentinel configuration file"
+    echo "port 5000
+    sentinel monitor mymaster $MASTER 6379 2
+    sentinel resolve-hostnames yes
+    sentinel announce-hostnames yes
+    sentinel down-after-milliseconds mymaster 5000
+    sentinel failover-timeout mymaster 60000
+    sentinel parallel-syncs mymaster 1
+    sentinel auth-pass mymaster $REDIS_PASSWORD
+    " > /etc/redis/sentinel.conf
+    cat /etc/redis/sentinel.conf

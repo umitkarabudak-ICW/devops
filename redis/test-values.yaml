@@ -1,0 +1,307 @@
+appName: redis
+namespace: test
+replicaCount: 3
+password: "Redis1234"
+
+image:
+  repository: redis
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "7.0.0-alpine"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+#nindent 9
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: config
+        image: redis:7.0.0-alpine
+        env:
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: redis-secret
+                key: REDIS_PASSWORD
+        command: [ "sh", "-c" ]
+        args:
+          - |
+            echo "Copying configuration file"
+            cp /tmp/redis/redis.conf /etc/redis/redis.conf
+            echo "#REPLICA DEF"$'\r' >> /etc/redis/redis.conf
+
+            if [ "$(redis-cli -h sentinel -p 5000 ping)" != "PONG" ]; then
+              echo "Sentinel not found to get the master info, defaulting to redis-0"
+              if [ "$(hostname)" == "redis-0" ]; then
+                echo "This is redis-0, No need to update config."
+              else
+                echo "This is not redis-0, Updating redis.conf. finding master FQDN"
+                MASTER_FDQN=`hostname  -f | sed -e 's/redis-[0-9]\./redis-0./'`
+                echo "REPLICAOF $MASTER_FDQN 6379"$'\r' >> /etc/redis/redis.conf
+              fi
+            else
+              echo "Sentinel found, finding master"
+              MASTER="$(redis-cli -h sentinel -p 5000 sentinel get-master-addr-by-name mymaster | grep -E '(^redis-\d{1,})|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})')"
+              echo "Master got: $MASTER, updating this in redis.conf"
+              echo "REPLICAOF $MASTER 6379"$'\r' >> /etc/redis/redis.conf
+            fi
+            cat /etc/redis/redis.conf
+        volumeMounts:
+          - name: redis-config
+            mountPath: /etc/redis/
+          - name: config
+            mountPath: /tmp/redis/
+      containers:
+        command: ["redis-server"]
+        args: ["/etc/redis/redis.conf"]
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "1"
+          limits:
+            memory: "256Mi"
+            cpu: "1"
+        ports:
+          - name: redis
+            containerPort: 6379
+            protocol: TCP
+        volumeMounts:
+          - name: data
+            mountPath: /data
+          - name: redis-config
+            mountPath: /etc/redis/
+      volumes:
+        - name: redis-config
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: redis-configmap
+            items:
+            - key: redis.conf
+              path: redis.conf
+            - key: redis-init.sh
+              path: redis-init.sh
+  volumeClaimTemplates:
+    - kind: PersistentVolumeClaim
+      apiVersion: v1
+      metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: "256Mi"
+        storageClassName: longhorn   
+
+# nindent 10
+service:
+  name: redis
+  type: ClusterIP
+  ports:  
+  - port: 6379
+    targetPort: 6379
+    name: redis
+  selector: {}
+
+serviceAccount: {}
+podAnnotations: {}
+podSecurityContext: {}
+securityContext: {}
+autoscaling: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  
+
+
+# nindent 20
+traefik:
+  redis:
+    ingress:
+      routes:
+        - match: HostSNI(`*`)
+          services:
+            - name: redis-haproxy
+              port: 6379
+
+  haproxy:
+    ingress:
+      routes:
+        - kind: Rule
+          match: Host(`redis-haproxy-test.rsm-dev-cloud.vodafone.local`)
+          services:
+            - name: redis-haproxy
+              port: 8080
+
+# nindent 21
+haproxy:
+  appName: haproxy
+  replicaCount: 1
+  image:
+    repository: haproxy
+    pullPolicy: IfNotPresent
+    tag: "2.9.3-alpine"
+  service:
+    type: ClusterIP
+    name: redis-haproxy
+    ports:  
+      - name: dashboard
+        port: 8080
+        targetPort: 8080
+      - name: redis-write
+        port: 6379
+        targetPort: 6379
+      - name: redis-read
+        port: 6380
+        targetPort: 6380
+    selector: {}
+  spec:
+    template:
+      spec: 
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - haproxy
+                topologyKey: "kubernetes.io/hostname"
+        containers:      
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "300m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          ports:
+            - containerPort: 8080
+            - containerPort: 6379
+            - containerPort: 6380
+          volumeMounts:
+            - name: config
+              mountPath: /usr/local/etc/haproxy/haproxy.cfg
+              subPath: haproxy.cfg
+              readOnly: true
+        volumes: 
+          - name: config
+            configMap:
+              name: haproxy-config
+        restartPolicy: Always
+  autoscaling: {}
+  podAnnotations: {}
+  podSecurityContext: {}
+  initContainers: {}
+
+# nindent 22
+sentinel:
+  appName: sentinel
+  image:
+    repository: redis
+    pullPolicy: IfNotPresent
+    tag: "7.0.0-alpine"
+  spec:
+    template:
+      spec:
+        initContainers:
+          - name: config
+            image: redis:7.0.0-alpine
+            env:
+              - name: REDIS_NODES
+                valueFrom:
+                  configMapKeyRef:
+                    name: redis-configmap
+                    key: REDIS_NODES
+              - name: REDIS_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: redis-secret
+                    key: REDIS_PASSWORD
+            #command: [ "sh", "-c", "/scripts/sentinel_init.sh" ]
+            command: [ "sh", "-c" ]
+            args:
+              - |
+                echo "Looping thorugh the redis list to see if Redis Master node is available now"
+                for i in ${REDIS_NODES//,/ }
+                do
+                    echo "RedisHost: $i, Password: $REDIS_PASSWORD"
+                    MASTER=$(redis-cli --no-auth-warning --raw -h $i -a $REDIS_PASSWORD info replication | awk '{print $1}' | grep master_host: | cut -d ":" -f2)
+                    if [ "$MASTER" == "" ]; then
+                        echo "no master info found in $i"
+                        MASTER=
+                    else
+                        echo "found $MASTER. setting the configurations"
+                        break
+                    fi
+                done
+                echo "Creating Sentinel configuration file"
+                echo "port 5000
+                sentinel monitor mymaster $MASTER 6379 2
+                sentinel resolve-hostnames yes
+                sentinel announce-hostnames yes
+                sentinel down-after-milliseconds mymaster 5000
+                sentinel failover-timeout mymaster 60000
+                sentinel parallel-syncs mymaster 1
+                sentinel auth-pass mymaster $REDIS_PASSWORD
+                " > /etc/redis/sentinel.conf
+                cat /etc/redis/sentinel.conf
+            volumeMounts:
+            - name: redis-config
+              mountPath: /etc/redis/
+            - name: init-script
+              mountPath: /scripts/  
+        containers:
+          command: ["redis-sentinel"]
+          args: ["/etc/redis/sentinel.conf"]
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "300m"
+            limits:
+              memory: "1Gi"
+              cpu: "300m"
+          ports:
+          - containerPort: 5000
+            name: sentinel
+          volumeMounts:
+          - name: redis-config
+            mountPath: /etc/redis/
+          - name: data
+            mountPath: /data
+        volumes:
+          - name: init-script
+            configMap:
+              name:  sentinel-configmap
+              defaultMode: 0777
+              items:
+              - key: sentinel-init.sh
+                path: sentinel-init.sh
+          - name: redis-config
+            emptyDir: {}
+          - name: data
+            emptyDir: {}
+  autoscaling: {}
+  service:
+    name: sentinel
+    type: ClusterIP
+    ports:  
+    - port: 5000
+      targetPort: 5000
+      name: sentinel
+    selector: {}

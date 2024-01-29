@@ -1,0 +1,14 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: {{ .Values.appName}}
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - redis-{{ .Values.namespace }}
+  routes:
+    {{- toYaml .Values.traefik.redis.ingress.routes | nindent 10 }}
+#  tls:
+#    secretName: kafka-ca-secret
+#    passthrough: true  

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name:  {{ .Values.sentinel.service.name }}
+  labels:
+    app: {{ .Values.sentinel.service.name }}
+    app.kubernetes.io/component: {{ .Values.sentinel.service.name }}
+    app.kubernetes.io/instance: {{ .Values.sentinel.service.name }}
+spec:
+  clusterIP: None
+  ports:
+    {{- toYaml .Values.sentinel.service.ports | nindent 22 }}
+  selector:
+    app: {{ .Values.sentinel.appName }}
+
+
+

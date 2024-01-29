@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.sentinel.appName }}
+spec:
+  serviceName: {{ .Values.sentinel.service.name }}
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app:  {{ .Values.sentinel.appName }}
+  template:
+    metadata:
+      labels:
+        app:  {{ .Values.sentinel.appName }}
+    spec:
+      initContainers:
+        {{- toYaml .Values.sentinel.spec.template.spec.initContainers | nindent  22 }}
+      containers:
+      - name: {{ .Values.sentinel.appName }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        command: {{ .Values.sentinel.spec.template.spec.containers.command }}
+        args: {{ .Values.sentinel.spec.template.spec.containers.args }}
+        resources:
+          {{- toYaml .Values.sentinel.spec.template.spec.containers.resources | nindent 22 }}
+        ports:
+          {{- toYaml .Values.sentinel.spec.template.spec.containers.ports | nindent 22 }}
+        volumeMounts:
+          {{- toYaml .Values.sentinel.spec.template.spec.containers.volumeMounts | nindent 22 }}
+      volumes:
+        {{- toYaml .Values.sentinel.spec.template.spec.volumes | nindent 22 }}

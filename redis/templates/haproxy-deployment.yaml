@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.haproxy.appName }}
+  labels:
+    app: {{ .Values.haproxy.appName }}
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: {{ .Values.haproxy.appName }}
+  template:
+    metadata:
+      name: {{ .Values.haproxy.appName }}
+      labels:
+        app: {{ .Values.haproxy.appName }}
+    spec:
+      affinity:
+        {{- toYaml .Values.haproxy.spec.template.spec.affinity | nindent 20 }}
+      containers:
+        - name: {{ .Values.haproxy.appName }}
+          image: "{{ .Values.haproxy.image.repository }}:{{ .Values.haproxy.image.tag }}"
+          ports:
+             {{- toYaml .Values.haproxy.spec.template.spec.containers.ports | nindent 20 }}
+          volumeMounts:
+            {{- toYaml .Values.haproxy.spec.template.spec.containers.volumeMounts | nindent 20 }}
+      restartPolicy: Always
+      volumes:
+        {{- toYaml .Values.haproxy.spec.template.spec.volumes | nindent 20 }}
