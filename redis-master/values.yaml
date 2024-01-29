@@ -100,8 +100,8 @@ spec:
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: redis-master
-                  key: database-password
+                  name: redis-master-secret
+                  key: REDIS_PASSWORD
             - name: JAVA_TOOL_OPTIONS
           ports:
             - containerPort: 6379
